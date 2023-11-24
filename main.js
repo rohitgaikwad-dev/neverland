@@ -11,7 +11,7 @@ window.addEventListener("resize", () => {
 });
 
 const files = (index) => {
-    let data = `https://neverland.agency/assets/0001.ad04d6cb.webp
+  let data = `https://neverland.agency/assets/0001.ad04d6cb.webp
     https://neverland.agency/assets/0002.cfc021f0.webp
     https://neverland.agency/assets/0003.493bb9b2.webp
     https://neverland.agency/assets/0004.519dabfd.webp
@@ -190,11 +190,30 @@ const files = (index) => {
     https://neverland.agency/assets/0177.282f3259.webp
     https://neverland.agency/assets/0178.2686b4b2.webp
     https://neverland.agency/assets/0179.b39712df.webp
-    https://neverland.agency/assets/0180.baf992ce.webp`};
+    https://neverland.agency/assets/0180.baf992ce.webp
+    `;
+
+  return data.split("\n")[index];
+};
+
+const frameCount = 180;
+
+const images = [];
+const imageSeq = {
+  frame: 0,
+};
+
+for (let i = 0; i < frameCount; i++) {
+  const img = new Image();
+  img.src = files(i);
+  images.push(img);
+}
 
 const render = () => {
   scaleImage(images[imageSeq.frame], context);
 };
+
+images[0].onload = render;
 
 const scaleImage = (img, ctx) => {
   let canvas = ctx.canvas;
@@ -216,3 +235,25 @@ const scaleImage = (img, ctx) => {
     img.height * ratio
   );
 };
+
+gsap.to(imageSeq, {
+  frame: frameCount - 1,
+  snap: "frame",
+  ease: "none",
+  scrollTrigger: {
+    scrub: 2,
+    trigger: canvas,
+    start: "top 0%",
+    end: "bottom 0%",
+  },
+  onUpdate: render,
+});
+
+gsap.to(canvas, {
+  scrollTrigger: {
+    scrub: 2,
+    trigger: "#main",
+    start: "bottom 0%",
+    ease: "none",
+  },
+});
